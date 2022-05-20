@@ -2248,7 +2248,7 @@ int main(int argc, char **argv_orig, char **envp) {
       if (unlikely((afl->last_sync_cycle < afl->queue_cycle ||
                     (!afl->queue_cycle && afl->afl_env.afl_import_first)) &&
                    afl->sync_id)) {
-
+        ACTF("Initial call to sync_fuzzers");
         sync_fuzzers(afl);
 
       }
@@ -2476,13 +2476,18 @@ int main(int argc, char **argv_orig, char **envp) {
 
       if (likely(afl->skip_deterministic)) {
 
+        ACTF("__check_sync: ST=%llu, ST>>1=%llu, last_st=%llu, cur_t=%llu, SI=%llu, si_cnt=%llu",
+                SYNC_TIME, SYNC_TIME>>1, afl->last_sync_time, get_cur_time(), SYNC_INTERVAL, sync_interval_cnt);
+        fflush(stdout);
+
         if (unlikely(afl->is_main_node)) {
 
           if (unlikely(get_cur_time() >
                        (SYNC_TIME >> 1) + afl->last_sync_time)) {
 
             if (!(sync_interval_cnt++ % (SYNC_INTERVAL / 3))) {
-
+              ACTF("=====================MAIN NODE CALL SYNC FUZZERS!===========================");
+              fflush(stdout);
               sync_fuzzers(afl);
 
             }
@@ -2493,7 +2498,11 @@ int main(int argc, char **argv_orig, char **envp) {
 
           if (unlikely(get_cur_time() > SYNC_TIME + afl->last_sync_time)) {
 
-            if (!(sync_interval_cnt++ % SYNC_INTERVAL)) { sync_fuzzers(afl); }
+            if (!(sync_interval_cnt++ % SYNC_INTERVAL)) { 
+                ACTF("=====================SECONDARY NODE CALL SYNC FUZZERS!===========================");
+                fflush(stdout);
+                sync_fuzzers(afl);
+            }
 
           }
 
@@ -2501,6 +2510,8 @@ int main(int argc, char **argv_orig, char **envp) {
 
       } else {
 
+        ACTF("=====================NON_DETERMENISTIC CALL SYNC FUZZERS!===========================");
+        fflush(stdout);
         sync_fuzzers(afl);
 
       }
