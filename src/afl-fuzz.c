@@ -2262,6 +2262,9 @@ int main(int argc, char **argv_orig, char **envp) {
   OKF("Writing mutation introspection to '%s'", ifn);
   #endif
 
+  ACTF("START!");
+  fflush(stdout);
+
   while (likely(!afl->stop_soon)) {
 
     cull_queue(afl);
@@ -2274,6 +2277,8 @@ int main(int argc, char **argv_orig, char **envp) {
                     (!afl->queue_cycle && afl->afl_env.afl_import_first)) &&
                    afl->sync_id)) {
 
+        ACTF("    == call sync at loop start!");
+        fflush(stdout);
         sync_fuzzers(afl);
 
       }
@@ -2522,10 +2527,15 @@ int main(int argc, char **argv_orig, char **envp) {
 
         if (unlikely(afl->is_main_node)) {
 
+            ACTF("  ==try to sync by time. afl->sync_time=%llu, afl->last_sync_time=%llu", (afl->sync_time >> 1), afl->last_sync_time);
+            fflush(stdout);
+
           if (unlikely(get_cur_time() >
                        (afl->sync_time >> 1) + afl->last_sync_time)) {
 
             if (!(sync_interval_cnt++ % (SYNC_INTERVAL / 3))) {
+                ACTF("  ===== call sync by time!");
+                fflush(stdout);
 
               sync_fuzzers(afl);
 

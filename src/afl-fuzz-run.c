@@ -595,7 +595,8 @@ abort_calibration:
 /* Grab interesting test cases from other fuzzers. */
 
 void sync_fuzzers(afl_state_t *afl) {
-
+ACTF("____________________________________________________SYNC_FUZZERS______________________________________________");
+fflush(stdout);
   DIR           *sd;
   struct dirent *sd_ent;
   u32            sync_cnt = 0, synced = 0, entries = 0;
